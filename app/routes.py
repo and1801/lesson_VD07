@@ -48,15 +48,17 @@ def logout():
 def account():
     return render_template('account.html')
 
+
 @app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
-    form = EditProfileForm()
+    form = EditProfileForm(obj=current_user)  # Предзаполнение формы текущими данными
+
     if form.validate_on_submit():
-        # Здесь вы можете обновить данные пользователя в базе данных
-        # user.username = form.username.data
-        # user.email = form.email.data
-        # user.set_password(form.password.data)
-        # db.session.commit()
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        if form.password.data:
+            current_user.set_password(form.password.data)
+        db.session.commit()
         flash('Ваш профиль был обновлён!', 'success')
         return redirect(url_for('profile'))
     return render_template('edit_profile.html', form=form)
